@@ -268,8 +268,13 @@ DWORD SendThread(LPVOID lpThreadParameter)
 	instr.assign(ThreadInfo->Buffer, ThreadInfo->BufferSize);
 	
 	instr.erase(instr.size()-1, 1);
-	Stegano.Encode(instr, outstr);
-	SendEncodedMessage(outstr, ThreadInfo->hContact);
+//	DO_DEBUG;
+	if (Stegano.Encode(instr, outstr) == -1) {
+		MessageBoxW(NULL, L"Invalid input", L"Input ERROR", 0);
+	} else {
+		SendEncodedMessage(outstr, ThreadInfo->hContact);
+	}
+
 	free(ThreadInfo->Buffer);
 	free(ThreadInfo);
 	return 0;
@@ -282,9 +287,6 @@ void SendWorker(PTHREADINFO ThreadInfo)
 }
 
 #define IDC_LOG                         1001
-
-
-
 
 #define TIME_STAMP_END ": "
 
