@@ -1,16 +1,20 @@
 #include "consts.h"
 #include <fstream>
 #include <iostream>
-//#include <string>
-//#define MAX_STRING_TO_MUTATE 1
-//#define FILE_NAME "bash.txt"
+#include <string>
+#define MAX_STRINGS_TO_MUTATE 4
+
+#define FILE_NAME "bash.txt"
+#define MAX_STRING_SIZE 8192
+
+
 using namespace std;
 
 class  CSteganoEncoder{
 private:
 	
-	/*
-	char * stringsToMutate[MAX_STRING_TO_MUTATE];*/
+	
+	char * stringsToMutate[MAX_STRINGS_TO_MUTATE];
 	
 	void encodeBytes(unsigned char* message, Code code[DATA_SIZE]) {
       
@@ -35,31 +39,36 @@ private:
 }
 
 public:
-	//CSteganoEncoder() {
-	//	
-	//	
-	//		for(int i =0; i < MAX_STRING_TO_MUTATE; i++) {
-	//			cout << "no file";
-	//			//to be null if no file exists
-	//			stringsToMutate[i] = NULL;
-	//		}
+	CSteganoEncoder() {
 
-	//		string currentMonolog;
-	//		string currentMessage;
-	//	
-	//		ifstream ifile(FILE_NAME);
-	//	
-	//		if(!ifile) {
-	//			return;
-	//		};
-	//	
-	//		while(!ifile.eof()){
-	//			currentMessage+=ifile.get();
-	//		}		
+		
+		char * EMPTY_STRING = "";
 
-	//		cout << currentMessage;
+		for(int i =0; i < MAX_STRINGS_TO_MUTATE; i++) {
+			
+			stringsToMutate[i] = EMPTY_STRING;
+		}
+		
 
-	//};
+		
+		
+		ifstream ifile(FILE_NAME);
+		
+		if(!ifile) {
+			//cout << "no file";
+			return;
+		};
+		int temp = 0;
+		
+		while((!ifile.eof()) && (temp < MAX_STRINGS_TO_MUTATE)){
+			char * currentMessage= (char *)malloc(MAX_STRING_SIZE);
+			ifile.getline(currentMessage, MAX_STRING_SIZE);
+			stringsToMutate[temp] = currentMessage;
+			temp++;
+			//puts(currentMessage);
+		}		
+		ifile.close();
+	};
 
 //data двоичные данные
 //instr строка которую нужно видоизменить.
@@ -71,24 +80,27 @@ public:
 int encode(char *&outstr,char *instr, unsigned char *data) {
 
 	Code code[TOTAL_MESSAGES] = {0,0,0,0,0,0,0,0};
-    
+    instr = stringsToMutate[intRandom(MAX_STRINGS_TO_MUTATE)];
     char ** messages = NULL;
     int size = 0;
-    
+    //puts(instr);
     size = parseString2(instr,messages);
 
     if(NULL == messages) {
+		//cout << "1";
         return -1;
     };    
     if(-1 == size) {
+		//cout << "2";
         return -1;
     };    
     //will change only first TOTAL_MESSAGES messages)
     encodeBytes(data, code);
     
     for(int i = 0; i < TOTAL_MESSAGES; i++) {
-            setSpaces(code[i], messages[i]);
-            setPoints(code[i], messages[i]);              
+            setPoints(code[i], messages[i]);
+			setSpaces(code[i], messages[i]);
+                          
             setReturns(code[i], messages[i]);
     };
     
