@@ -109,7 +109,9 @@ int CStegano::Encode(string & in,string & tosend)
  	unsigned char message[8];
 //	memcpy(message, in.c_str(), 8*sizeof(char));
 	//__asm int 3
-    codec->CompressHuff(in,message,len);
+	if (codec->CompressHuff(in,message,len) == -1) {
+		return -1;
+	}
 
     if(0!=Enc->encode(encoded,testString2, message)) {
         return -1;
