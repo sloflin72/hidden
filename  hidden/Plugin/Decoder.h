@@ -23,7 +23,6 @@ public:
 int decode(char *instr, unsigned char  (*data)[DATA_SIZE]) {
    char ** messages = NULL;
    int size = 0;
-
    memset(data, 0, DATA_SIZE);
    size =   parseString2(instr, messages);
    
