@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "windows.h"
 #include <string>
 #include <fstream>
@@ -105,14 +106,12 @@ int CStegano::Encode(string & in,string & tosend)
 
 //	CHuff codec;
 	
-    CSteganoEncoder *encoder = new CSteganoEncoder;
+ 	unsigned char message[8];
+//	memcpy(message, in.c_str(), 8*sizeof(char));
+	//__asm int 3
+    codec->CompressHuff(in,message,len);
 
-	unsigned char message[8];
-	memcpy(message, in.c_str(), 8*sizeof(char));
-
- //   codec->CompressHuff(in,message,len);
-
-    if(0!=encoder->encode(encoded,testString2, message)) {
+    if(0!=Enc->encode(encoded,testString2, message)) {
         return -1;
     }
 
@@ -124,20 +123,19 @@ int CStegano::Encode(string & in,string & tosend)
 int CStegano::Decode(string & recieve,string & out)
 {
 	unsigned     char decoded[DATA_SIZE] = {1,1,1,1,1,1,1,1};
-	CSteganoDecoder *decoder = new CSteganoDecoder;	
- 	char* encoded = new char[recieve.size()+1];
+	char* encoded = new char[recieve.size()+1];
 	memcpy(encoded,recieve.c_str(),recieve.size()+1);
-	if(0!=decoder->decode(encoded, &decoded)) {
+	if(0!=Dec->decode(encoded, &decoded)) {
            return -1;
     }
 
 //	if (!Check(gMessage, decoded)) {
 //		__asm int 3;
 //	}
-	//codec->DeCompressHuff(out,decoded,64);
-	for (int i = 0; i < DATA_SIZE; i++) {
+	codec->DeCompressHuff(out,decoded,64);
+	/*for (int i = 0; i < DATA_SIZE; i++) {
 		out+= decoded[i];
 	}
-	out+= '\0';
+	out+= '\0';*/
 	return 0;
 }
