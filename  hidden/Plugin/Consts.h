@@ -63,7 +63,7 @@ int getOccurences(char * string, char * stringToFind) {
 int addSpace(char * &instr) {
 
 int count = getOccurences(instr, " ");
-if(0 == 0) {
+if(0 == count) {
 	memcpy(instr+strlen(instr), " ", 2);
 	//instr[strlen(instr) + 1] = ' ';
 	//instr[strlen(instr) + 2] = 0;
@@ -72,7 +72,7 @@ if(0 == 0) {
 	char * currPos = instr;
 	
 	for(int i = 0; i < pos; i++) {
-		currPos = strstr(currPos, " ");
+		currPos = strstr(currPos+1, " ");
 	};
 	insert(instr, currPos, " ");
 };
@@ -130,8 +130,8 @@ int setSpaces(Code code, char * message) {
     int count = getOccurences(message, singleSpace);
 
     if( (count & 1) != code.spacesParity) {
-        //addSpace(message);     
-		memcpy(message+length,singleSpace, 2);
+        addSpace(message);     
+		//memcpy(message+length,singleSpace, 2);
 
     };
      length = strlen(message);
@@ -139,9 +139,9 @@ int setSpaces(Code code, char * message) {
 
 
     if( ((count>>1) & 1) != code.spacesMod) {
-        //addSpace(message);     
-		//addSpace(message);     
-		memcpy(message+length,doubleSpaces, 3);
+        addSpace(message);     
+		addSpace(message);     
+		//memcpy(message+length,doubleSpaces, 3);
              length+=2;
              count+=2;
     };
