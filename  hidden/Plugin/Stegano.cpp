@@ -55,6 +55,7 @@ unsigned char gMessage[]  = {1, 0, 128, 250, 252, 253, 254, 255};
 CStegano::CStegano(void)
 {
 	codec=new CHuff;
+
 	Enc=new CSteganoEncoder;
 	Dec=new CSteganoDecoder;
 }

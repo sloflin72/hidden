@@ -61,6 +61,7 @@ list<MYCONTACTINFO> *pHandleList;
 HICON hIconSteno;
 HICON hIconDisSteno;
 HANDLE hServiceToggle, hMenuToggle;
+CStegano *gpStegano;
 
 #define DBSETTING_STENO_DISABLE "Disable stenography"
 
@@ -103,6 +104,8 @@ extern "C" __declspec(dllexport)int Unload(void)
 //	UnhookEvent(hHookEventAdd);
 	if (pHandleList)
 		delete pHandleList;
+	if (gpStegano)
+		delete gpStegano;
 
 	if (hSndWndEvent)
 		UnhookEvent(hSndWndEvent);
@@ -216,7 +219,7 @@ void RealSendMessage(HANDLE hContact, const char *buffer, int size)
 	dat->bIsRtl = 0;
 */
 	gLogFile << "time begin " << time(NULL) << endl;
-	wait_time = 500 + rand()%1000;
+	wait_time = 3000 + rand()%1000;
 	gLogFile << "wait_time " << wait_time << endl;
 	Sleep(wait_time);
 	gLogFile << "time end " << time(NULL) << endl;
@@ -262,14 +265,13 @@ DWORD SendThread(LPVOID lpThreadParameter)
 {
 	string instr, outstr;
 	PTHREADINFO ThreadInfo = (PTHREADINFO)lpThreadParameter;
-	CStegano Stegano;
 
 	gLogFile << "SendThread " << GetCurrentThreadId() << endl;
 	instr.assign(ThreadInfo->Buffer, ThreadInfo->BufferSize);
 	
 	instr.erase(instr.size()-1, 1);
-//	DO_DEBUG;
-	if (Stegano.Encode(instr, outstr) == -1) {
+	
+	if (gpStegano->Encode(instr, outstr) == -1) {
 		MessageBoxW(NULL, L"Invalid input", L"Input ERROR", 0);
 	} else {
 		SendEncodedMessage(outstr, ThreadInfo->hContact);
@@ -348,7 +350,7 @@ LRESULT DecWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	struct MessageWindowDataInternal *dat = NULL;
 	PTHREADINFO ThreadInfo = (PTHREADINFO)malloc(sizeof(THREADINFO));
 	string out, parseout, finalout;
-	CStegano Stegano;
+
 	if (uMsg == WM_LBUTTONDOWN) {
 
 		gLogFile << "DecWndProc my button down" << endl;
@@ -369,7 +371,7 @@ LRESULT DecWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 //			DO_DEBUG;
 			
-			Stegano.Decode(parseout, finalout);
+			gpStegano->Decode(parseout, finalout);
 //			DO_DEBUG;
 			//DECODE!!!!
 //			CreateWindowW("Edit", "DecodedMessage", dwStyle, 100, 100, 100, 100, NULL, NULL, hinstance, NULL);
@@ -544,6 +546,8 @@ extern "C" int __declspec(dllexport)Load(PLUGINLINK *link)
 	
 	gLogFile << "PRIVED" << endl;
 	gLogFile << "pHandleList " << (void *)pHandleList << endl;
+	
+	gpStegano = new CStegano;
 
 	HookEvent(ME_SYSTEM_MODULESLOADED,MainInit);
 
