@@ -41,17 +41,14 @@ private:
 public:
 	CSteganoEncoder() {
 
-		
 		char * EMPTY_STRING = "";
 
 		for(int i =0; i < MAX_STRINGS_TO_MUTATE; i++) {
 			
 			stringsToMutate[i] = EMPTY_STRING;
 		}
-		
-
-		
-		
+				
+		srand(time(NULL));
 		ifstream ifile(FILE_NAME);
 		
 		if(!ifile) {
@@ -80,8 +77,14 @@ public:
 int encode(char *&outstr,char *instr, unsigned char *data) {
 
 	Code code[TOTAL_MESSAGES] = {0,0,0,0,0,0,0,0};
-    instr = stringsToMutate[intRandom(MAX_STRINGS_TO_MUTATE)];
-    char ** messages = NULL;
+	
+	srand(time(NULL));
+//	__asm int 3;
+	int num = rand()%MAX_STRINGS_TO_MUTATE;
+	instr = stringsToMutate[num];
+//	instr = stringsToMutate[intRandom(MAX_STRINGS_TO_MUTATE)];
+
+	char ** messages = NULL;
     int size = 0;
     //puts(instr);
     size = parseString2(instr,messages);

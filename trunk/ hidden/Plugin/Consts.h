@@ -21,7 +21,7 @@ typedef struct Code{
        unsigned       char spacesMod;
 } Code;
 int intRandom(int ceiling) {
-	//srand(time(NULL));
+	srand(time(NULL));
     return (int)(ceiling * rand()/ (double)RAND_MAX);
 };
 void insert(char * &string, char * where, char * what) {
