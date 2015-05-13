@@ -1,0 +1,1 @@
+Plugin enables user to hide encrypted text in regular messages.
